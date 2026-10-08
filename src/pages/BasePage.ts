@@ -1,5 +1,7 @@
 import { Page, Locator } from "@playwright/test";
-import { ElementActionError, ElementType } from "../utils/ElementActionError";
+import { ElementActionError } from "../utils/ElementActionError";
+import { ElementState } from "@utils/type";
+import { ElementType } from "@utils/type";
 
 export abstract class BasePage {
   readonly page: Page;
@@ -221,34 +223,40 @@ export abstract class BasePage {
     }
   }
 
-  // ============================================================
-  // WAIT ACTIONS
-  // ============================================================
-
-  /**
-   * Wait until the element is on screen.
-   *
-   * Rarely needed - click/fill/check already wait on their own. Use this only
-   * when you must confirm something appeared without acting on it, such as a
-   * success banner.
-   */
-  async waitForElement(locator: Locator, timeout = 10000): Promise<void> {
+  /** Read a computed CSS value, e.g. "color", "display", "border-color". */
+  async getCssValue(locator: Locator, property: string): Promise<string> {
     const t = Date.now();
     try {
-      // waitFor(), not waitForSelector() - no deprecated ElementHandle returned.
-      await locator.waitFor({ state: "visible", timeout });
+      return await locator.evaluate(
+        (el, prop) => window.getComputedStyle(el).getPropertyValue(prop),
+        property,
+      );
     } catch (e) {
-      this.fail("waitFor", locator, "Container", e, t);
+      this.fail(`getCssValue:${property}`, locator, "Any", e, t);
     }
   }
 
-  /** Wait until the element disappears - loading spinners, closing modals. */
-  async waitForHidden(locator: Locator, timeout = 10000): Promise<void> {
+  // ============================================================
+  // WAIT STATES (attached / detached / visible / hidden)
+
+  /**
+   * Wait until the element reaches a given state.
+   *
+   * Rarely needed - click, fill and check already wait on their own. Use
+   * this only to confirm a state without acting on it, such as a success
+   * banner appearing or a spinner disappearing.
+   */
+  async waitForState(
+    locator: Locator,
+    state: ElementState = ElementState.Visible,
+    timeout = 10000,
+  ): Promise<void> {
     const t = Date.now();
     try {
-      await locator.waitFor({ state: "hidden", timeout });
+      // waitFor(), not waitForSelector() - no deprecated ElementHandle returned.
+      await locator.waitFor({ state, timeout });
     } catch (e) {
-      this.fail("waitForHidden", locator, "Container", e, t);
+      this.fail(`waitFor:${state}`, locator, "Container", e, t);
     }
   }
 
