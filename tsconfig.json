@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -11,13 +13,13 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "types": ["node"],
-
-    // "paths": {
-    //   // "@pages/*": ["src/pages/*"],
-    //   // "@elements/*": ["src/elements/*"],
-    //   // "@api/*": ["src/api/*"],
-    //   // "@utils/*": ["src/utils/*"]
-    // },
+    "baseUrl": ".",
+    "paths": {
+      "@pages/*": ["src/pages/*"],
+      "@elements/*": ["src/elements/*"],
+      "@api/*": ["src/api/*"],
+      "@utils/*": ["src/utils/*"]
+    },
 
     "noEmit": true
   },
