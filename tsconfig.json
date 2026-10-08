@@ -1,29 +1,26 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "lib": ["ES2020"],
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM"],
+
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "baseUrl": ".",
+    "types": ["node"],
+
     "paths": {
-      "@/*": ["src/*"],
       "@pages/*": ["src/pages/*"],
+      "@elements/*": ["src/elements/*"],
       "@api/*": ["src/api/*"],
-      "@utils/*": ["src/utils/*"],
-      "@agents/*": ["src/agents/*"]
+      "@utils/*": ["src/utils/*"]
     },
-    "types": ["node"]
+
+    "noEmit": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "tests"]
+  "include": ["src/**/*.ts", "tests/**/*.ts", "playwright.config.ts"],
+  "exclude": ["node_modules", "dist", "playwright-report", "test-results"]
 }
