@@ -6,13 +6,22 @@ Advanced test automation framework built with **Playwright**, **TypeScript**, an
 
 This framework **eliminates boilerplate** through intelligent auto-generation:
 
-### 1️⃣ Auto-Generated Page Action Methods
+### 1️⃣ Foundation Classes (BasePage.ts, BaseAPI.ts)
 
-Declare locators → Methods auto-generate. No manual method writing!
+Packed with **all reusable methods** for:
 
-### 2️⃣ Auto-Generated API Tests
+- **UI interactions** (navigation, click, fill, getText, visibility checks, keyboard/mouse actions)
+- **API validations** (request/response handling, auth, headers, status checks, schema, body validation)
 
-Update YAML endpoint contracts → Tests auto-generate. No test writing!
+No need to write common methods repeatedly!
+
+### 2️⃣ Auto-Generated Page Action Methods
+
+Declare locators → Methods auto-generate using **BasePage.ts**. No manual method writing!
+
+### 3️⃣ Auto-Generated API Tests
+
+Update YAML endpoint contracts → Tests auto-generate using **BaseAPI.ts**. No test writing!
 
 ## 🎯 Other Features
 
@@ -34,7 +43,7 @@ export class LoginPage extends BasePage {
   loginBtn = this.page.locator('button[type="submit"]');
 }
 
-// Usage - All methods auto-available! ✨
+// Usage - All Page methods auto-available! ✨
 await loginPage.emailInput.fill("test@example.com");
 await loginPage.passwordInput.fill("password");
 await loginPage.loginBtn.click();
