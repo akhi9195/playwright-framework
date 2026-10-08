@@ -7,7 +7,7 @@ import { BaseElement } from "./BaseElement";
  * and <textarea>.
  *
  * Inherits from BaseElement: isVisible, isEnabled, isDisabled, count,
- * exists, getAttribute, hover, waitForState.
+ * exists, getAttribute,getCssValue, hover, waitForState.
  */
 export class Input extends BaseElement {
   /**
