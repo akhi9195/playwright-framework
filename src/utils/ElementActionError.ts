@@ -1,12 +1,4 @@
-export type ElementType =
-  | "TextInput"
-  | "Button"
-  | "Checkbox"
-  | "Dropdown"
-  | "Text"
-  | "Link"
-  | "Container"
-  | "Any";
+import { ElementType } from "./type";
 
 export class ElementActionError extends Error {
   readonly action: string;
