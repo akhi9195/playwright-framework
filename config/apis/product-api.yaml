@@ -1,0 +1,76 @@
+# Contract for the products endpoints.
+#
+# Each endpoint here becomes one generated test. The generator reads this
+# file and writes a .spec.ts that calls BaseAPI - it does not run anything
+# itself, so the output is ordinary test code you can read and debug.
+
+name: ProductAPI
+baseUrl: https://fakestoreapi.com
+
+# Optional. Applied to every endpoint unless one overrides it.
+# auth:
+#   type: bearer
+#   token: ${API_TOKEN}      # read from the environment, never committed
+
+endpoints:
+  - name: get_product
+    description: Fetch a single product by id
+    method: GET
+    path: /products/{id}
+    pathParams:
+      id: 1
+    expectStatus: 200
+    validate:
+      - path: id
+        type: number
+      - path: title
+        type: string
+      - path: price
+        greaterThan: 0
+
+  - name: list_products
+    description: Fetch a limited list of products
+    method: GET
+    path: /products
+    queryParams:
+      limit: 5
+    expectStatus: 200
+    validate:
+      - path: length
+        equals: 5
+      - path: "[0].id"
+        type: number
+
+  - name: create_product
+    description: Create a new product
+    method: POST
+    path: /products
+    body:
+      title: Generated Test Product
+      price: 499.99
+      category: electronics
+      description: Created by a generated test
+    expectStatus: 201
+    validate:
+      - path: id
+        exists: true
+      - path: title
+        equals: Generated Test Product
+
+  - name: update_product
+    description: Update an existing product
+    method: PUT
+    path: /products/{id}
+    pathParams:
+      id: 1
+    body:
+      price: 1299.00
+    expectStatus: 200
+
+  - name: delete_product
+    description: Delete a product
+    method: DELETE
+    path: /products/{id}
+    pathParams:
+      id: 1
+    expectStatus: 200
