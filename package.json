@@ -3,13 +3,21 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "generate:api": "tsx scripts/generate-api-tests.ts",
+    "test:api": "npm run generate:api && playwright test tests/api --project=chromium",
+    "test:ui": "playwright test tests/ui --project=chromium",
+    "test:unit": "playwright test --project=unit"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.64.0",
-    "@types/node": "^26.6.4"
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^26.6.4",
+    "js-yaml": "^5.4.3",
+    "tsx": "^4.23.15"
   }
 }
