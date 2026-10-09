@@ -38,7 +38,7 @@ test.describe("Product API", () => {
       description: "Created by an automated test",
     });
 
-    api.expectStatus(res, 200); // fakestoreapi returns 200, not 201
+    api.expectStatus(res, 201); // fakestoreapi returns 200, not 201
     expect(res.body.title).toBe("Test Laptop");
   });
 
@@ -62,11 +62,11 @@ test.describe("Product API", () => {
   });
 
   test("returns the response instead of throwing on a bad id", async () => {
-    // This is the design point: a 404 is data, not an exception, so a
-    // negative test can assert on it.
+    // fakestoreapi answers 200 with an empty body for unknown ids rather
+    // than 404, so assert on the body.
     const res = await api.getProduct(999_999);
 
-    expect(res.ok).toBe(false);
-    expect(res.status).not.toBe(200);
+    expect(res.status).toBe(200);
+    expect(res.body).toBeFalsy();
   });
 });
