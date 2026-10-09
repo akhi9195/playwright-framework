@@ -26,3 +26,15 @@ export type ElementType =
   | "Link"
   | "Container"
   | "Any";
+
+/** What kind of problem caused a failure. */
+export enum ErrorCategory {
+  /** Test code or locator problem. */
+  ScriptIssue = "SCRIPT_ISSUE",
+  /** Test data missing, stale or conflicting. */
+  DataIssue = "DATA_ISSUE",
+  /** Infrastructure down or unreachable. */
+  EnvironmentIssue = "ENVIRONMENT_ISSUE",
+  /** A real bug in the application. */
+  Defect = "DEFECT",
+}

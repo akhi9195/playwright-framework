@@ -1,14 +1,31 @@
-import { Page, Locator } from "@playwright/test";
+import { Page, Locator, BrowserContext } from "@playwright/test";
 import { ElementActionError } from "../utils/ElementActionError";
 import { ElementState } from "@utils/type";
 import { ElementType } from "@utils/type";
 
+import { Input } from "../elements/Input";
+import { Button } from "../elements/Button";
+import { Link } from "../elements/Link";
+import { Text } from "../elements/Text";
+import { Checkbox } from "../elements/Checkbox";
+import { Radio } from "../elements/Radio";
+import { Dropdown } from "../elements/Dropdown";
+import { Container } from "../elements/Container";
+import { Iframe } from "../elements/Iframe";
+import { ErrorMapper } from "../utils/ErrorMapper";
+
 export abstract class BasePage {
   readonly page: Page;
   protected readonly pageName: string;
+  /**
+   * The browser context this page belongs to - think of it as the browser
+   * window holding all the tabs. Needed to catch new tabs as they open.
+   */
+  readonly context: BrowserContext;
 
   constructor(page: Page) {
     this.page = page;
+    this.context = page.context();
     this.pageName = this.constructor.name; // "LoginPage", "HomePage"
   }
 
@@ -90,6 +107,41 @@ export abstract class BasePage {
       await locator.click({ button: "right" });
     } catch (e) {
       this.fail("rightClick", locator, "Button", e, t);
+    }
+  }
+
+  /**
+   * Click something that opens a new tab, and return that new tab.
+   *
+   * A target="_blank" link does not navigate the current page - it opens a
+   * second one. Playwright does not follow it automatically, so the new tab
+   * has to be caught as it appears.
+   *
+   * Both calls go inside Promise.all on purpose. The tab can open before
+   * the click() promise settles, so listening only after the click would
+   * miss the event and hang until timeout.
+   *
+   *   const newTab = await this.clickAndWaitForNewTab(this.helpLink.locator);
+   *   const helpPage = new HelpPage(newTab);
+   *
+   * The caller owns the returned page, including closing it.
+   */
+  async clickAndWaitForNewTab(
+    locator: Locator,
+    timeout = 10000,
+  ): Promise<Page> {
+    const t = Date.now();
+    try {
+      const [newPage] = await Promise.all([
+        this.context.waitForEvent("page", { timeout }),
+        locator.click(),
+      ]);
+
+      // The new tab exists but may still be blank - wait for its first paint.
+      await newPage.waitForLoadState("domcontentloaded");
+      return newPage;
+    } catch (e) {
+      this.fail("clickAndWaitForNewTab", locator, "Link", e, t);
     }
   }
 
@@ -265,10 +317,25 @@ export abstract class BasePage {
   // ============================================================
 
   /** Open a URL. */
-  async goto(url: string): Promise<void> {
+  // async goto(url: string): Promise<void> {
+  //   const t = Date.now();
+  //   try {
+  //     await this.page.goto(url);
+  //   } catch (e) {
+  //     // No Locator here, so build the error directly instead of via fail().
+  //     if (e instanceof ElementActionError) throw e;
+  //     throw new ElementActionError("goto", url, "Any", e, {
+  //       pageName: this.pageName,
+  //       url,
+  //       elapsedMs: Date.now() - t,
+  //     });
+  //   }
+  // }
+
+  async goto(url: string, timeout = 30000): Promise<void> {
     const t = Date.now();
     try {
-      await this.page.goto(url);
+      await this.page.goto(url, { waitUntil: "domcontentloaded", timeout });
     } catch (e) {
       // No Locator here, so build the error directly instead of via fail().
       if (e instanceof ElementActionError) throw e;
@@ -355,6 +422,62 @@ export abstract class BasePage {
   }
 
   // ============================================================
+  // ELEMENT FACTORIES
+  // ============================================================
+  // Build a typed element and hand it a reference back to this page, so
+  // its actions route through this class's error handling.
+  //
+  //   this.loginBtn = this.button(
+  //     page.getByRole("button", { name: /log in/i }),
+  //     "Login button",
+  //   );
+
+  /** A text field or textarea. */
+  protected input(locator: Locator, description: string): Input {
+    return new Input(locator, this, description);
+  }
+
+  /** A clickable button. */
+  protected button(locator: Locator, description: string): Button {
+    return new Button(locator, this, description);
+  }
+
+  /** A hyperlink. */
+  protected link(locator: Locator, description: string): Link {
+    return new Link(locator, this, description);
+  }
+
+  /** Read-only text: labels, headings, error messages. */
+  protected text(locator: Locator, description: string): Text {
+    return new Text(locator, this, description);
+  }
+
+  /** A checkbox. */
+  protected checkbox(locator: Locator, description: string): Checkbox {
+    return new Checkbox(locator, this, description);
+  }
+
+  /** A radio button. */
+  protected radio(locator: Locator, description: string): Radio {
+    return new Radio(locator, this, description);
+  }
+
+  /** A native <select> dropdown. */
+  protected dropdown(locator: Locator, description: string): Dropdown {
+    return new Dropdown(locator, this, description);
+  }
+
+  /** A section holding other elements - a table row, a card, a modal. */
+  protected container(locator: Locator, description: string): Container {
+    return new Container(locator, this, description);
+  }
+
+  /** An embedded page. Pass the locator for the <iframe> tag itself. */
+  protected iframe(locator: Locator, description: string): Iframe {
+    return new Iframe(locator, this, description);
+  }
+
+  // ============================================================
   // ERROR HANDLING
   // ============================================================
 
@@ -386,6 +509,8 @@ export abstract class BasePage {
   ): never {
     if (error instanceof ElementActionError) throw error; // don't double-wrap
 
+    const { category, rootCause } = ErrorMapper.analyze(error as Error);
+
     throw new ElementActionError(
       action,
       locator.toString(),
@@ -395,6 +520,8 @@ export abstract class BasePage {
         pageName: this.pageName,
         url: this.safeUrl(),
         elapsedMs: Date.now() - startedAt,
+        category,
+        rootCause,
       },
     );
   }
