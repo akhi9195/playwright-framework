@@ -1,4 +1,4 @@
-import { ElementType } from "./type";
+import { ElementType, ErrorCategory } from "./type";
 
 export class ElementActionError extends Error {
   readonly action: string;
@@ -14,7 +14,13 @@ export class ElementActionError extends Error {
     target: string,
     elementType: ElementType,
     originalError: unknown,
-    context: { pageName?: string; url?: string; elapsedMs?: number } = {},
+    context: {
+      pageName?: string;
+      url?: string;
+      elapsedMs?: number;
+      category?: ErrorCategory;
+      rootCause?: string;
+    } = {},
   ) {
     const err = originalError as Error;
     const pageName = context.pageName ?? "UnknownPage";
@@ -24,11 +30,13 @@ export class ElementActionError extends Error {
     const message = [
       ``,
       `Failed to ${action} on ${elementType}`,
+      ...(context.category ? [`  Category: ${context.category}`] : []),
+      ...(context.rootCause ? [`  Reason  : ${context.rootCause}`] : []),
       `  Page    : ${pageName}`,
       `  Target  : ${target}`,
       `  URL     : ${url}`,
       `  Elapsed : ${elapsedMs}ms`,
-      `  Cause   : ${err?.message?.split("\n")[0] ?? String(originalError)}`,
+      `  Error   : ${err?.message?.split("\n")[0] ?? String(originalError)}`,
     ].join("\n");
 
     super(message, { cause: err });
