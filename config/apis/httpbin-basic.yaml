@@ -1,0 +1,22 @@
+# Basic auth against httpbin.org, which really validates the credentials -
+# a wrong password returns 401, so this test proves auth is being sent.
+
+name: HttpBinBasicAuth
+baseUrl: https://httpbin.org
+
+auth:
+  type: basic
+  username: testuser
+  password: testpass
+
+endpoints:
+  - name: basic_auth_accepted
+    description: The endpoint accepts the configured credentials
+    method: GET
+    path: /basic-auth/testuser/testpass
+    expectStatus: 200
+    validate:
+      - path: authenticated
+        equals: true
+      - path: user
+        equals: testuser
