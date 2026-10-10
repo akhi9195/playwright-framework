@@ -25,14 +25,26 @@ export interface EndpointContract {
   validate?: ValidationRule[];
 }
 
+/** How requests to this API are authenticated. */
+export interface AuthConfig {
+  type: "bearer" | "basic" | "apikey" | "none";
+
+  /** bearer: the token. Use ${ENV_VAR} to read it from the environment. */
+  token?: string;
+
+  /** basic: the credentials. Use ${ENV_VAR} for both. */
+  username?: string;
+  password?: string;
+
+  /** apikey: the key, and which header carries it. */
+  key?: string;
+  header?: string;
+}
+
 /** A whole YAML file - one API service. */
 export interface ApiContract {
   name: string;
   baseUrl: string;
-  auth?: {
-    type: "bearer" | "basic" | "apikey";
-    token?: string;
-    header?: string;
-  };
+  auth?: AuthConfig;
   endpoints: EndpointContract[];
 }

@@ -1,0 +1,35 @@
+# Bearer token against httpbin.org.
+#
+# The token here is a literal because httpbin accepts anything. For a real
+# API write ${API_TOKEN} instead - the generator turns that into a
+# CommonUtils.env() call, so the secret is read at run time and never
+# committed.
+
+name: HttpBinBearer
+baseUrl: https://httpbin.org
+
+auth:
+  type: bearer
+  token: demo-token-12345
+  # token: ${API_TOKEN}      <- for a real API
+
+endpoints:
+  - name: bearer_token_accepted
+    description: The endpoint accepts the bearer token
+    method: GET
+    path: /bearer
+    expectStatus: 200
+    validate:
+      - path: authenticated
+        equals: true
+      - path: token
+        equals: demo-token-12345
+
+  - name: headers_carry_authorization
+    description: The Authorization header reaches the server
+    method: GET
+    path: /headers
+    expectStatus: 200
+    validate:
+      - path: headers.Authorization
+        contains: Bearer

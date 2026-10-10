@@ -57,6 +57,22 @@ export class ApiTestGenerator {
     if (!parsed.endpoints?.length)
       throw new Error(`${filePath}: no endpoints defined`);
 
+    if (parsed.auth) {
+      const { type, token, username, password, key } = parsed.auth;
+
+      if (type === "bearer" && !token) {
+        throw new Error(`${filePath}: bearer auth needs a "token"`);
+      }
+      if (type === "basic" && (!username || !password)) {
+        throw new Error(
+          `${filePath}: basic auth needs "username" and "password"`,
+        );
+      }
+      if (type === "apikey" && !key) {
+        throw new Error(`${filePath}: apikey auth needs a "key"`);
+      }
+    }
+
     for (const ep of parsed.endpoints) {
       if (!ep.name) throw new Error(`${filePath}: an endpoint has no "name"`);
       if (!ep.method)
@@ -98,6 +114,7 @@ ${tests}});
 import { test, expect, request, APIRequestContext } from "@playwright/test";
 import { GenericAPI } from "../../../src/api/GenericAPI";
 import { JsonUtils } from "../../../src/utils/JsonUtils";
+import { CommonUtils } from "../../../src/utils/CommonUtils";
 
 let context: APIRequestContext;
 let api: GenericAPI;
@@ -113,23 +130,30 @@ test.afterAll(async () => {
   }
 
   private static authSetup(contract: ApiContract): string {
-    if (!contract.auth) return "";
+    const auth = contract.auth;
+    if (!auth || auth.type === "none") return "";
 
-    const token = contract.auth.token ?? "";
-    // ${VAR} in the YAML means "read this from the environment", so a real
-    // token is never written into a committed file.
-    const value = token.startsWith("${")
-      ? `CommonUtils.env("${token.slice(2, -1)}")`
-      : `"${token}"`;
-
-    switch (contract.auth.type) {
+    switch (auth.type) {
       case "bearer":
-        return `\n  api.setBearerToken(${value});`;
+        return `\n  api.setBearerToken(${ApiTestGenerator.value(auth.token)});`;
+
+      case "basic":
+        return `\n  api.setBasicAuth(${ApiTestGenerator.value(auth.username)}, ${ApiTestGenerator.value(auth.password)});`;
+
       case "apikey":
-        return `\n  api.setApiKey(${value}, "${contract.auth.header ?? "X-API-Key"}");`;
+        return `\n  api.setApiKey(${ApiTestGenerator.value(auth.key)}, "${auth.header ?? "X-API-Key"}");`;
+
       default:
         return "";
     }
+  }
+
+  /** "${API_TOKEN}" becomes an env lookup; anything else is a literal. */
+  private static value(raw?: string): string {
+    if (!raw) return `""`;
+    return raw.startsWith("${") && raw.endsWith("}")
+      ? `CommonUtils.env("${raw.slice(2, -1)}")`
+      : JSON.stringify(raw);
   }
 
   private static buildTest(ep: EndpointContract): string {
