@@ -1,6 +1,6 @@
 import yaml from "js-yaml";
-import { FileUtils } from "./FileUtils";
-import { CommonUtils } from "./CommonUtils";
+import { FileUtils } from "../FileUtils";
+import { CommonUtils } from "../CommonUtils";
 import { ApiContract, EndpointContract, ValidationRule } from "./ContractTypes";
 
 /**

@@ -2,7 +2,7 @@ import {
   APIRequestContext,
   APIResponse as PlaywrightResponse,
 } from "@playwright/test";
-import { ApiRequestError } from "@utils/ApiRequestError";
+import { ApiRequestError } from "@utils/errors/ApiRequestError";
 
 /** What every request returns. */
 export interface ApiResponse<T = any> {

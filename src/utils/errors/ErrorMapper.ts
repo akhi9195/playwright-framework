@@ -1,4 +1,14 @@
-import { ErrorCategory } from "./type";
+/** What kind of problem caused a failure. */
+export enum ErrorCategory {
+  /** Test code or locator problem. */
+  ScriptIssue = "SCRIPT_ISSUE",
+  /** Test data missing, stale or conflicting. */
+  DataIssue = "DATA_ISSUE",
+  /** Infrastructure down or unreachable. */
+  EnvironmentIssue = "ENVIRONMENT_ISSUE",
+  /** A real bug in the application. */
+  Defect = "DEFECT",
+}
 
 /** One matching rule: if the error text matches, it is this category. */
 interface Rule {

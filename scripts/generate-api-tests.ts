@@ -1,4 +1,4 @@
-import { ApiTestGenerator } from "../src/utils/ApiTestGenerator";
+import { ApiTestGenerator } from "../src/utils/codegen/ApiTestGenerator";
 
 const CONTRACTS = "config/apis";
 const OUTPUT = "tests/api/generated";
