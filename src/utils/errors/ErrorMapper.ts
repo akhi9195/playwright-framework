@@ -84,6 +84,7 @@ export class ErrorMapper {
     },
 
     // ---------- SCRIPT ----------
+
     {
       pattern: /strict mode violation|resolved to \d+ elements/i,
       category: ErrorCategory.ScriptIssue,
@@ -99,6 +100,11 @@ export class ErrorMapper {
       pattern: /expect\(|AssertionError/i,
       category: ErrorCategory.ScriptIssue,
       rootCause: "Assertion did not hold",
+    },
+    {
+      pattern: /Timeout \d+ms exceeded/i,
+      category: ErrorCategory.ScriptIssue,
+      rootCause: "Action timed out - element never became ready",
     },
   ];
 

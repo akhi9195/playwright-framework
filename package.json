@@ -1,23 +1,72 @@
 {
-  "name": "playwright-framework",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "playwright-ai-framework",
+  "version": "0.1.0",
+  "description": "Playwright framework with typed page elements, centralized error handling, YAML-driven API tests, and AI-powered failure analysis",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "bin": {
+    "pw-analyze": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "playwright",
+    "test-automation",
+    "page-object-model",
+    "api-testing",
+    "typescript",
+    "e2e-testing",
+    "ai",
+    "claude",
+    "test-failure-analysis",
+    "yaml",
+    "code-generation"
+  ],
+  "license": "MIT",
+  "author": "Akhilesh Bashettiwar",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhi9195/playwright-framework.git"
+  },
+  "homepage": "https://github.com/akhi9195/playwright-framework#readme",
+  "bugs": {
+    "url": "https://github.com/akhi9195/playwright-framework/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build",
     "generate:api": "tsx scripts/generate-api-tests.ts",
-    "test:api": "npm run generate:api && playwright test tests/api --project=chromium",
     "test:ui": "playwright test tests/ui --project=chromium",
+    "test:api": "npm run generate:api && playwright test tests/api --project=api",
     "test:unit": "playwright test --project=unit"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.0",
+    "js-yaml": "^4.1.0"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.43.0"
+  },
   "devDependencies": {
-    "@playwright/test": "^1.64.0",
+    "@playwright/test": "^1.43.0",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^26.6.4",
-    "js-yaml": "^5.4.3",
-    "tsx": "^4.23.15"
+    "@types/node": "^20.0.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
   }
 }

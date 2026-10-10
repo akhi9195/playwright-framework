@@ -1,7 +1,7 @@
 import { Page, Locator, BrowserContext } from "@playwright/test";
 import { ElementActionError } from "../utils/errors/ElementActionError";
-import { ElementState } from "@utils/type";
-import { ElementType } from "@utils/type";
+import { ElementState } from "../utils/type";
+import { ElementType } from "../utils/type";
 
 import { Input } from "../elements/Input";
 import { Button } from "../elements/Button";

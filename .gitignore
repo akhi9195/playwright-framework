@@ -15,6 +15,7 @@ pnpm-lock.yaml
 /dist/
 /build/
 /out/
+dist/
 
 # Environment
 .env

@@ -1,7 +1,7 @@
 import { Locator, FrameLocator } from "@playwright/test";
 // Type-only import: erased at compile time, so no circular dependency at runtime.
 import type { BasePage } from "../pages/BasePage";
-import { ElementState } from "@utils/type";
+import { ElementState } from "../utils/type";
 
 /**
  * Shared parent for every UI element.
