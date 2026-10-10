@@ -1,4 +1,4 @@
-import { ErrorCategory } from "./type";
+import { ErrorCategory } from "../type";
 
 /** One matching rule: if the error text matches, it is this category. */
 interface Rule {

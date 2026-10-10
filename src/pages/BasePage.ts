@@ -1,5 +1,5 @@
 import { Page, Locator, BrowserContext } from "@playwright/test";
-import { ElementActionError } from "../utils/ElementActionError";
+import { ElementActionError } from "../utils/errors/ElementActionError";
 import { ElementState } from "@utils/type";
 import { ElementType } from "@utils/type";
 
@@ -12,7 +12,7 @@ import { Radio } from "../elements/Radio";
 import { Dropdown } from "../elements/Dropdown";
 import { Container } from "../elements/Container";
 import { Iframe } from "../elements/Iframe";
-import { ErrorMapper } from "../utils/ErrorMapper";
+import { ErrorMapper } from "../utils/errors/ErrorMapper";
 
 export abstract class BasePage {
   readonly page: Page;
