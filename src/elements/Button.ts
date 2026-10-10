@@ -1,5 +1,5 @@
 import { BaseElement } from "./BaseElement";
-import { MouseButton } from "@utils/type";
+import { MouseButton } from "../utils/type";
 
 /**
  * A clickable button.

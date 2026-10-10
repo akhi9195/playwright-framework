@@ -1,6 +1,24 @@
-# Playwright Framework
+# Playwright AI Framework
 
 Advanced test automation framework built with **Playwright**, **TypeScript**, and **AI Agents**.
+
+[![npm version](https://img.shields.io/npm/v/playwright-ai-framework)](https://www.npmjs.com/package/playwright-ai-framework)
+[![license](https://img.shields.io/npm/l/playwright-ai-framework)](./LICENSE)
+
+---
+
+## 🚀 Get Started
+
+**Click [Use this template](https://github.com/akhi9195/playwright-framework/generate)**, or clone it:
+
+```bash
+git clone https://github.com/akhi9195/playwright-framework.git my-tests
+cd my-tests
+npm install
+npx playwright install
+npx playwright test
+npx pw-analyze           # explain the failures
+```
 
 ## 🚀 Core Innovation: Less Boilerplate
 
@@ -77,6 +95,10 @@ export class LoginPage extends BasePage {
   }
 }
 ```
+
+`this.input()`, `this.button()` and the rest are factory methods on
+`BasePage`. They hand the element a reference back to the page, which is
+how errors pick up the page name.
 
 **Every element method is already there** ✨
 
@@ -202,6 +224,23 @@ that silently sends no credentials.
 
 Every action routes through one place, so a failure arrives like this:
 
+```
+Failed to click on Button
+  Category: SCRIPT_ISSUE
+  Reason  : Element never became ready to act on
+  Page    : LoginPage
+  Target  : getByRole('button', { name: /checkout/i })
+  URL     : https://www.saucedemo.com/cart.html
+  Elapsed : 30041ms
+  Error   : locator.click: Timeout 30000ms exceeded.
+```
+
+Instead of:
+
+```
+TimeoutError: locator.click: Timeout 30000ms exceeded.
+```
+
 Four rules make that work:
 
 - **One chokepoint.** No framework method calls Playwright directly. Every
@@ -243,12 +282,34 @@ gets blamed.
 
 ---
 
+## 🤖 AI Failure Analysis
+
+**Setup:**
+
+```typescript
+// playwright.config.ts
+reporter: [["html"], ["json", { outputFile: "test-results/results.json" }]],
+```
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...   # get one at platform.claude.com
+npx playwright test
+npx pw-analyze
+```
+
+It reads Playwright's JSON report, so it works on **any** Playwright
+project, not only this framework. When this framework's error format is
+present it picks up the extra fields and gives a sharper answer.
+
+Defaults to `claude-haiku-5-5` — a run of 50 failures costs a few cents.
+
+---
+
 ## 🗺️ Future Roadmap
 
 ### Phase 2: AI Agents 🤖
 
 - **Test Generator Agent** - generate tests from written requirements
-- **Failure Analyzer Agent** - analyze failures and suggest fixes
 - **Code Generator Agent** - scaffold page objects from a live page's HTML
 - **Locator Optimizer Agent** - suggest better locators
 - **Documentation Generator Agent** - generate docs from the code
@@ -273,8 +334,15 @@ npm run test:api         # generate, then run API tests
 npm run test:unit        # utility tests, no browser
 npx playwright test      # everything
 npx playwright show-report
+npx pw-analyze           # explain the failures
 ```
 
 ---
 
-## 📂 Project Layout
+## 📝 License
+
+MIT
+
+## 👤 Author
+
+Akhilesh Bashettiwar

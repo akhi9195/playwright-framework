@@ -33,7 +33,7 @@ test.describe("Login", () => {
   });
 
   test("reads element state without acting on it", async () => {
-    expect(await loginPage.usernameInput.isVisible()).toBe(true);
+    await expect(loginPage.usernameInput.locator).toBeVisible();
     expect(await loginPage.loginButton.isEnabled()).toBe(true);
     expect(await loginPage.errorMessage.exists()).toBe(false);
 
