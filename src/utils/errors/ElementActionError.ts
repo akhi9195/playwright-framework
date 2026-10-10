@@ -1,4 +1,5 @@
-import { ElementType, ErrorCategory } from "../type";
+import { ElementType } from "../type";
+import { ErrorCategory } from "./ErrorMapper";
 
 export class ElementActionError extends Error {
   readonly action: string;
